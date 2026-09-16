@@ -1,0 +1,75 @@
+`include "discipline.h"
+`include "constants.h"
+
+// $Date: 1997/08/28 05:48:45 $
+// $Revision: 1.1 $
+//
+//
+// Based on the OVI Verilog-A Language Reference Manual, version 1.0 1996
+//
+//
+ 
+
+
+//--------------------
+// comparator
+//
+// -  comparator
+//
+// sigin:	(val,flow)
+// sigref:	reference to which 'sigin' is compared (val,flow)
+// sigout:	comparator output (val,flow)
+//
+// INSTANCE parameters
+//    sigout_high  = maximum output of the comparator  (val)
+//    sigout_low   = minimum output of the comparator  (val)
+//    sigin_offset = subtracted from 'sigin' before comparason to sigref (val)
+//    comp_slope   = determines the sensitivity of the comparator []
+//
+// MODEL parameters
+//    {none}
+//
+// Compares ('sigin'-'sigin_offset') to 'sigref' - the output is related to
+// their difference by a tanh relationship.
+//
+// If the difference >>> 'sigref', 'sigout' is 'sigout_high'.
+// If the difference = 'sigref', 'sigout' is ('sigout_high' + 'sigout_low')/2.
+// If the difference <<< 'sigref', 'sigout' is 'sigout_low'.
+// Intermediate points are fitting to a tanh scaled by 'comp_slope'.
+//
+
+module ideal_comp(Vp, Vn, Vrefp, Vrefn, outp, outn, CLK1, CLK2);
+input Vp, Vn, Vrefp, Vrefn, CLK1, CLK2;
+output outp, outn;
+electrical Vp, Vn, Vrefp, Vrefn, outp, outn, CLK1, CLK2;
+
+parameter real v_high       = 1.8; 
+parameter real v_low        = 0.0;  
+parameter real sigin_offset = 0.0;
+parameter real comp_slope   = 10000; 
+
+real stored_p, stored_n;
+real diff, calc_p, calc_n;
+
+   analog begin
+		  @ ( initial_step ) begin
+         	if (v_high <= v_low) begin
+                $display("Range specification error. v_high = (%E) less than v_low = (%E).\n", v_high, v_low );
+		    	   $finish(0);
+         end
+      end
+
+      diff = V(Vp, Vn) - V(Vrefp, Vrefn) - sigin_offset;
+
+      calc_p = 0.5 * (v_high - v_low) * tanh(comp_slope * diff) + (v_high + v_low)/2;
+      calc_n = 0.5 * (v_high - v_low) * tanh(-comp_slope * diff) + (v_high + v_low)/2;
+
+      if (V(CLK1) > 0.9) begin
+          stored_p = calc_p;
+          stored_n = calc_n;
+      end
+
+      V(outp) <+ stored_p;
+      V(outn) <+ stored_n;
+	end
+endmodule

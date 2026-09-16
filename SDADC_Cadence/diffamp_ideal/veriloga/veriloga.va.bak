@@ -1,0 +1,47 @@
+`include "discipline.h"
+`include "constants.h"
+
+module diffamp_ideal(sigin_p, sigin_n, sigout_p, sigout_n);
+input sigin_p, sigin_n;
+output sigout_p, sigout_n;
+electrical sigin_p, sigin_n, sigout_p, sigout_n;
+
+parameter real gain = 1;
+parameter real sigin_offset = 0;
+
+parameter real vmax = 1.8;  
+parameter real vmin = 0.0;  
+
+    real v_ideal_p, v_ideal_n;
+    real v_out_p, v_out_n;
+
+   analog begin
+
+      v_ideal_p = 0.9 + ((V(sigin_p, sigin_n) - sigin_offset) * gain / 2);
+      v_ideal_n = 0.9 - ((V(sigin_p, sigin_n) - sigin_offset) * gain / 2);
+
+
+      if (v_ideal_p > vmax) begin
+         v_out_p = vmax;
+      end else if (v_ideal_p < vmin) begin
+         v_out_p = vmin;
+      end else begin
+         v_out_p = v_ideal_p;
+      end
+
+
+      if (v_ideal_n > vmax) begin
+         v_out_n = vmax;
+      end else if (v_ideal_n < vmin) begin
+         v_out_n = vmin;
+      end else begin
+         v_out_n = v_ideal_n;
+      end
+	
+	 V(sigout_p) <+ v_out_p;
+     V(sigout_n) <+ v_out_n;
+
+   //  V(sigout_p) <+ 0.9 + ((V(sigin_p, sigin_n) - sigin_offset) * gain / 2);
+   //  V(sigout_n) <+ 0.9 -((V(sigin_p, sigin_n) - sigin_offset) * gain / 2);
+   end
+endmodule

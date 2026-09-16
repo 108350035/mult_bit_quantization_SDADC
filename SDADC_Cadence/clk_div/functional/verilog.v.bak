@@ -1,0 +1,36 @@
+//Verilog HDL for "SDADC", "clk_div" "functional"
+
+module clk_div (clk,rst_n,clk64,clk256);
+	input clk,rst_n;
+	output reg clk64,clk256;
+
+	reg [4:0] cnt32
+	reg [6:0] cnt128;
+
+always@(posedge clk,negedge rst_n)
+begin
+	if(!rst_n) begin
+		cnt32<=0;
+		cnt128<=0;
+	end
+	else begin
+		cnt32<=cnt32+1;
+		cnt128<=cnt128+1;
+	end
+end
+
+always@(posedge clk,negedge rst_n)
+begin
+	if(!rst_n) begin
+		clk64<=0;
+		clk256<=0;
+	end
+	else begin
+		clk64<=(cnt32 == 31)?~clk64:clk64;
+		clk256<=(cnt128 == 63)?~clk256:clk256;
+	end
+end
+
+
+endmodule
+

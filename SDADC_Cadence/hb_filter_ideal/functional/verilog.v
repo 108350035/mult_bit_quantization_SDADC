@@ -1,0 +1,129 @@
+//Verilog HDL for "SDADC", "hb_filter" "functional"
+
+
+module hb_filter_ideal (clk,rst_n,in,out);
+	input clk,rst_n;
+	input [11:0] in;
+	output reg [11:0] out;
+
+
+reg sel;
+wire signed [11:0] in_s;
+reg signed [11:0] in0;
+reg signed [25:0] H0_add_reg [39:0];
+reg signed [25:0] H1_add_reg [19:0];
+wire signed [26:0] H01_add,A;
+
+integer j;
+
+assign in_s = in - 12'd2048;
+
+assign H01_add = H0_add_reg[0] + H1_add_reg[0];
+assign A = (H01_add >>> 6) + 12'd2048;
+
+
+always@(posedge clk,negedge rst_n)
+begin
+    if(!rst_n) sel<=0;
+    else sel<=sel+1;
+end
+
+always@(posedge clk,negedge rst_n)
+begin
+    if(!rst_n) in0<=0;
+    else in0<=in_s;
+end
+
+always@(posedge clk,negedge rst_n)
+begin
+    if(!rst_n) out<=0;
+    else out<=A;
+end
+
+
+always@(posedge clk,negedge rst_n)
+begin
+    if(!rst_n) begin
+        for(j=0;j<40;j=j+1) begin
+            H0_add_reg[j]<=0;
+        end
+    end
+    else if(sel == 1) begin
+    	H0_add_reg[0] <= H0_add_reg[1] - in0;
+	H0_add_reg[1] <= H0_add_reg[2] + in0;
+	H0_add_reg[2] <= H0_add_reg[3] - in0;
+	H0_add_reg[3] <= H0_add_reg[4] + in0;
+	H0_add_reg[4] <= H0_add_reg[5] - in0;
+	H0_add_reg[5] <= H0_add_reg[6] + in0;
+	H0_add_reg[6] <= H0_add_reg[7] - in0;
+	H0_add_reg[7] <= H0_add_reg[8] + in0;
+	H0_add_reg[8] <= H0_add_reg[9] - in0;
+	H0_add_reg[9] <= H0_add_reg[10] + in0;
+	H0_add_reg[10] <= H0_add_reg[11] - in0;
+	H0_add_reg[11] <= H0_add_reg[12] + in0;
+	H0_add_reg[12] <= H0_add_reg[13] - in0;
+	H0_add_reg[13] <= H0_add_reg[14] + (in0 <<< 1);
+	H0_add_reg[14] <= H0_add_reg[15] - (in0 <<< 1);
+	H0_add_reg[15] <= H0_add_reg[16] + (in0 <<< 1);
+	H0_add_reg[16] <= H0_add_reg[17] - ((in0 <<< 1) + in0);
+	H0_add_reg[17] <= H0_add_reg[18] + (in0 <<< 2);
+	H0_add_reg[18] <= H0_add_reg[19] - ((in0 <<< 3) - in0);
+	H0_add_reg[19] <= H0_add_reg[20] + ((in0 <<< 4) + (in0 <<< 2));
+	H0_add_reg[20] <= H0_add_reg[21] + ((in0 <<< 4) + (in0 <<< 2));
+	H0_add_reg[21] <= H0_add_reg[22] - ((in0 <<< 3) - in0);
+	H0_add_reg[22] <= H0_add_reg[23] + (in0 <<< 2);
+	H0_add_reg[23] <= H0_add_reg[24] - ((in0 <<< 1) + in0);
+	H0_add_reg[24] <= H0_add_reg[25] + (in0 <<< 1);
+	H0_add_reg[25] <= H0_add_reg[26] - (in0 <<< 1);
+	H0_add_reg[26] <= H0_add_reg[27] + (in0 <<< 1);
+	H0_add_reg[27] <= H0_add_reg[28] - in0;
+	H0_add_reg[28] <= H0_add_reg[29] + in0;
+	H0_add_reg[29] <= H0_add_reg[30] - in0;
+	H0_add_reg[30] <= H0_add_reg[31] + in0;
+	H0_add_reg[31] <= H0_add_reg[32] - in0;
+	H0_add_reg[32] <= H0_add_reg[33] + in0;
+	H0_add_reg[33] <= H0_add_reg[34] - in0;
+	H0_add_reg[34] <= H0_add_reg[35] + in0;
+	H0_add_reg[35] <= H0_add_reg[36] - in0;
+	H0_add_reg[36] <= H0_add_reg[37] + in0;
+	H0_add_reg[37] <= H0_add_reg[38] - in0;
+	H0_add_reg[38] <= H0_add_reg[39] + in0;
+	H0_add_reg[39] <= (~in0) + 1;
+
+    end
+end
+
+always@(posedge clk,negedge rst_n)
+begin
+    if(!rst_n) begin
+        for(j=0;j<20;j=j+1) begin
+            H1_add_reg[j]<=0;
+        end
+    end
+    else if(sel == 0) begin
+	H1_add_reg[0] <= H1_add_reg[1];
+	H1_add_reg[1] <= H1_add_reg[2];
+	H1_add_reg[2] <= H1_add_reg[3];
+	H1_add_reg[3] <= H1_add_reg[4];
+	H1_add_reg[4] <= H1_add_reg[5];
+	H1_add_reg[5] <= H1_add_reg[6];
+	H1_add_reg[6] <= H1_add_reg[7];
+	H1_add_reg[7] <= H1_add_reg[8];
+	H1_add_reg[8] <= H1_add_reg[9];
+	H1_add_reg[9] <= H1_add_reg[10];
+	H1_add_reg[10] <= H1_add_reg[11];
+	H1_add_reg[11] <= H1_add_reg[12];
+	H1_add_reg[12] <= H1_add_reg[13];
+	H1_add_reg[13] <= H1_add_reg[14];
+	H1_add_reg[14] <= H1_add_reg[15];
+	H1_add_reg[15] <= H1_add_reg[16];
+	H1_add_reg[16] <= H1_add_reg[17];
+	H1_add_reg[17] <= H1_add_reg[18];
+	H1_add_reg[18] <= H1_add_reg[19];
+	H1_add_reg[19] <=  (in_s <<< 5);
+    end
+end
+
+
+
+endmodule

@@ -1,0 +1,74 @@
+--pcdbVlog file, Rev:1.0
+
+#CELL
+* NR2D1BWP7T40P140 *
+U13
+U31
+U25
+U21
+U17
+
+#CELL
+* AOI21D1BWP7T40P140 *
+U14
+U26
+U22
+U18
+
+#CELL
+* INVD1BWP7T40P140 *
+U10
+U24
+U20
+U16
+U12
+U11
+
+#CELL
+* XNR2D1BWP7T40P140 *
+U37
+
+#CELL
+* XOR2D1BWP7T40P140 *
+U36
+
+#CELL
+* DFCNQD1BWP7T40P140 *
+cnt32_reg_4_
+clk64_reg
+clk256_reg
+cnt128_reg_0_
+cnt128_reg_1_
+cnt128_reg_2_
+cnt128_reg_3_
+cnt128_reg_4_
+cnt128_reg_5_
+cnt128_reg_6_
+cnt32_reg_0_
+cnt32_reg_1_
+cnt32_reg_2_
+cnt32_reg_3_
+
+#CELL
+* AO21D1BWP7T40P140 *
+U32
+
+#CELL
+* OA21D1BWP7T40P140 *
+U28
+U35
+U33
+U30
+U29
+
+#CELL
+* ND2D1BWP7T40P140 *
+U19
+U34
+U27
+U23
+
+#CELL
+* ND3D1BWP7T40P140 *
+U15
+

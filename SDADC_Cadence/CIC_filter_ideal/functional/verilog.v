@@ -1,0 +1,83 @@
+//Verilog HDL for "SDADC", "CIC_filter" "functional"
+
+module CIC_filter_ideal (clk,rst_n,in,out);
+	input clk,rst_n;
+	input [2:0] in;
+	output reg [11:0] out;
+
+	reg [22:0] int_d0,int_d1,int_d2,int_d3;
+	reg [4:0] cnt;
+    reg [22:0] data_r;
+	reg [22:0] data_d0,data_d0_d,data_d1,data_d1_d,data_d2,data_d2_d,data_d3,data_d3_d;    
+    reg valid_r;
+	wire [22:0] out_cal;
+
+
+	always@(posedge clk,negedge rst_n)
+	begin
+		if(!rst_n) begin
+			int_d0<=0;
+			int_d1<=0;
+			int_d2<=0;
+			int_d3<=0;
+		end
+		else begin
+			int_d0<=int_d0 + in;
+			int_d1<=int_d0 + int_d1;
+			int_d2<=int_d1 + int_d2;
+			int_d3<=int_d2 + int_d3;
+		end
+	end
+
+    always@(posedge clk,negedge rst_n)
+	begin
+		if(!rst_n) cnt<=0;
+        else cnt<=cnt+1;
+    end
+
+    always@(posedge clk,negedge rst_n)
+    begin
+        if(!rst_n) begin
+            valid_r<=0;
+            data_r<=0;
+        end
+        else if(cnt == 31) begin
+            valid_r<=1;
+            data_r<=int_d3;
+        end
+        else valid_r<=0;
+    end 
+
+    always@(posedge clk,negedge rst_n)
+	begin
+		if(!rst_n) begin
+			data_d0<=0;
+			data_d0_d<=0;
+		    data_d1<=0;
+            data_d1_d<=0;
+            data_d2<=0;
+            data_d2_d<=0;
+            data_d3<=0;
+            data_d3_d<=0;
+		end
+		else if(valid_r) begin
+            data_d0<=data_r;
+            data_d0_d<=data_d0;
+        		data_d1<=data_d0 - data_d0_d;
+            data_d1_d<=data_d1;
+        		data_d2<=data_d1 - data_d1_d;
+        		data_d2_d<=data_d2;
+        		data_d3<=data_d2 - data_d2_d;
+        		data_d3_d<=data_d3;
+        end
+    end
+	assign out_cal = data_d3 - data_d3_d;
+
+    always@(posedge clk,negedge rst_n)
+    begin
+        if(!rst_n) out<=0;
+        else out<=out_cal[22:11];
+    end
+
+endmodule
+

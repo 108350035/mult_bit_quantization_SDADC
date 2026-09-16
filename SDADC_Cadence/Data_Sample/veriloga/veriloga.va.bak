@@ -1,0 +1,51 @@
+`include "constants.vams"
+`include "disciplines.vams"
+
+module ideal_dwa_dac_split (clk, lp0, lp1, lp2, lp3, lp4, lp5, lp6, ln0, ln1, ln2, ln3, ln4, ln5, ln6, vout);
+    input clk;
+    input lp0, lp1, lp2, lp3, lp4, lp5, lp6;
+    input ln0, ln1, ln2, ln3, ln4, ln5, ln6;
+    output vout;
+    
+    electrical clk;
+    electrical lp0, lp1, lp2, lp3, lp4, lp5, lp6;
+    electrical ln0, ln1, ln2, ln3, ln4, ln5, ln6;
+    electrical vout;
+
+    //  7  (1% Mismatch)
+    //  7  1.0 
+    parameter real C0 = 1.01;
+    parameter real C1 = 0.99;
+    parameter real C2 = 1.02;
+    parameter real C3 = 0.98;
+    parameter real C4 = 1.00;
+    parameter real C5 = 1.01;
+    parameter real C6 = 0.99;
+    
+    //  ( VDD=1.8V 0.9V  1)
+    parameter real Vth = 0.9; 
+
+    real q0, q1, q2, q3, q4, q5, q6;
+    real total_charge;
+
+    analog begin
+        //  (posedge clk)  ( sample)
+        @(cross(V(clk) - Vth, +1)) begin
+            
+            //  (LP - LN)  ()
+            q0 = ((V(lp0) > Vth ? 1.0 : 0.0) - (V(ln0) > Vth ? 1.0 : 0.0)) * C0;
+            q1 = ((V(lp1) > Vth ? 1.0 : 0.0) - (V(ln1) > Vth ? 1.0 : 0.0)) * C1;
+            q2 = ((V(lp2) > Vth ? 1.0 : 0.0) - (V(ln2) > Vth ? 1.0 : 0.0)) * C2;
+            q3 = ((V(lp3) > Vth ? 1.0 : 0.0) - (V(ln3) > Vth ? 1.0 : 0.0)) * C3;
+            q4 = ((V(lp4) > Vth ? 1.0 : 0.0) - (V(ln4) > Vth ? 1.0 : 0.0)) * C4;
+            q5 = ((V(lp5) > Vth ? 1.0 : 0.0) - (V(ln5) > Vth ? 1.0 : 0.0)) * C5;
+            q6 = ((V(lp6) > Vth ? 1.0 : 0.0) - (V(ln6) > Vth ? 1.0 : 0.0)) * C6;
+            
+            // 
+            total_charge = q0 + q1 + q2 + q3 + q4 + q5 + q6;
+        end
+
+        //  ()
+        V(vout) <+ transition(total_charge, 0, 10n, 10n);
+    end
+endmodule
