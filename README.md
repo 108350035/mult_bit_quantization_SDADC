@@ -8,7 +8,7 @@
 
 ### 電路架構
 
-![image])(https://github.com/108350035/mult_bit_quantization_SDADC/blob/main/%E9%9B%BB%E8%B7%AF%E6%9E%B6%E6%A7%8B.JPG)
+![image](https://github.com/108350035/mult_bit_quantization_SDADC/blob/main/%E9%9B%BB%E8%B7%AF%E6%9E%B6%E6%A7%8B.JPG)
 
 ### 結果
 
