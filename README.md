@@ -12,11 +12,11 @@
 
 ### 結果
 
-#### ENOB
+#### SD結果
 ![image](https://github.com/108350035/mult_bit_quantization_SDADC/blob/main/SD.JPG)
 
 
 #### 三級濾波器波形(CIC+補償+半帶)
-1[image](https://github.com/108350035/mult_bit_quantization_SDADC/blob/main/Filter.JPG)
+![image](https://github.com/108350035/mult_bit_quantization_SDADC/blob/main/Filter.JPG)
 
 
